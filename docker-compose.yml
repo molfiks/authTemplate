@@ -1,0 +1,30 @@
+services:
+  postgres:
+    container_name: postgres-sql-network
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: authtemplatedb
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - auth-template
+    restart: unless-stopped
+  mail-dev:
+    container_name: mail-dev-network
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+
+networks:
+  auth-template:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
