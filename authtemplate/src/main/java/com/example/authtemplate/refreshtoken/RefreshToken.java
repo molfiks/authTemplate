@@ -21,7 +21,7 @@ public class RefreshToken {
     private String refreshToken;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", unique = false)
     private User user;
 
     @Column(nullable = false)
@@ -29,5 +29,6 @@ public class RefreshToken {
 
     private boolean isExpired;
 
+    private String loggedUserIp;
 
 }

@@ -2,6 +2,7 @@ package com.example.authtemplate.auth;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,9 +28,14 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody @Valid AuthenticationRequest request
+            @RequestBody @Valid AuthenticationRequest request,
+            HttpServletRequest servletRequest
     ){
-        return ResponseEntity.ok(service.authenticate(request));
+        String ip = servletRequest.getHeader("X-Forwarded-For");
+        if (ip == null) {
+            ip = servletRequest.getRemoteAddr();
+        }
+        return ResponseEntity.ok(service.authenticate(request, ip));
     }
 /*
     @PostMapping("/refresh-token")

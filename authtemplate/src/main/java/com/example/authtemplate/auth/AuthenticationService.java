@@ -100,7 +100,7 @@ public class AuthenticationService {
         return codeBuilder.toString();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request, String ip) {
         var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -111,7 +111,7 @@ public class AuthenticationService {
         var user = ((User)auth.getPrincipal());
         claims.put("fullName", user.fullName());
         var jwtToken = jwtService.generateToken(claims,user);
-        jwtService.revokeRefreshTokens(user);
+        //jwtService.revokeRefreshTokens(user);
         var refreshToken = jwtService.generateToken(user);
         // save refresh token yapılacak dointernalfiltering dikkat edilmeli token validasyonu dikkat edilmeli
         var saveRefreshToken = RefreshToken.builder()
@@ -119,6 +119,7 @@ public class AuthenticationService {
                 .expiryDate(LocalDateTime.now().plusMinutes(jwtService.getRefreshTokenExpiration()))
                 .user(user)
                 .isExpired(false)
+                .loggedUserIp(ip)
                 .build();
         refreshTokenRepository.save(saveRefreshToken);
         return AuthenticationResponse.builder()
